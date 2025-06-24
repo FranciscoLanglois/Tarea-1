@@ -1,10 +1,14 @@
-# -*- coding: utf-8 -*-
-
 #Se importan librerias
 import time
 import pulp as lp
 import random
 import pandas as pd
+
+#Notacion:
+#v=volumenes de los items
+#w=valores de los items
+#n=numero de items
+#B=Capacidad máxima de la mochila
 
 random.seed(0)  # para obtener mismo resultado siempre
 
@@ -12,7 +16,7 @@ random.seed(0)  # para obtener mismo resultado siempre
 xls = pd.ExcelFile('InstanciasKnapsack.xlsx')
 
 #Se elige el tamaño de la instancia (S,M,L,XL)
-df = pd.read_excel(xls, 'M')
+df = pd.read_excel(xls, 'S')
 
 #Parámetros
 n = int(df.iloc[0, 1])
@@ -29,7 +33,7 @@ v = df.iloc[5:1005, 2].values
 # Descomentar para instancia L
 #w = df.iloc[5:2005, 1].values
 #v = df.iloc[5:2005, 2].values
-print(w,v)
+#print(w,v)
 
 # Descomentar para instancia XL
 #w = df.iloc[5:10005, 1].values
@@ -57,5 +61,20 @@ model.solve()
 for j in range(n):
     print(f"x_{j+1}= {int(x[j].varValue)}")
 
+#se termina de medir el tiempo
 end_time = time.time()
+#muestra el tiempo de ejecución
 print(f"Tiempo Solución: {end_time - start_time} segundos")
+
+# Obtener resultados
+selected_items = [j for j in range(n) if x[j].varValue == 1]
+total_value = sum(w[j] for j in selected_items)
+total_volume = sum(v[j] for j in selected_items)
+
+# Mostrar resultados
+
+print("Objetos seleccionados:", len(selected_items))
+print("Valor total:", total_value)
+print("Volumen total usado:", total_volume)
+print("Tiempo de solución:", round(end_time - start_time, 2), "segundos")
+
